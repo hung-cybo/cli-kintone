@@ -86,7 +86,6 @@ jobs:
       - name: Create job summaries
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          pages_url=https://$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]').github.io/$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')/allure-history/${{ github.run_id }}
+          pages_url=https://$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $1}').github.io/$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo $pages_url
           echo "[Allure report 📝](${pages_url})" >> $GITHUB_STEP_SUMMARY
-
