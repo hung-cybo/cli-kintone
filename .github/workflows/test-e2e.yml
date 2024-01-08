@@ -38,10 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: zulu
-          java-version: 17
+          java-version: 21
       - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
         with:
@@ -82,3 +82,26 @@ jobs:
           github_token: $
           publish_branch: gh-pages
           publish_dir: allure-history
+
+      - name: Set GitHub Pages URL
+        id: set-pages-url
+        run: echo "::set-output name=pages_url::https://$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]').github.io/$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')/allure-history/${{ github.run_id }}"
+
+  attach-test-report:
+    needs: test-e2e
+    runs-on: ubuntu-latest
+    if: ${{ needs.test-e2e.outputs.os == 'ubuntu-latest' }}
+    steps:
+      - name: Download test report artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: allure-history
+          path: allure-history
+      - name: Upload test report as a job summary
+        run: echo "##[set-output name=artifact_content]allure-history"
+        id: set-output
+      - name: Set GitHub Pages URL
+        run: echo "##[set-output name=pages_url]${{ needs.test-e2e.outputs.pages_url }}"
+      - name: Display GitHub Pages URL
+        run: | 
+          echo "GitHub Pages URL: ${{ needs.test-e2e.outputs.pages_url }}"
