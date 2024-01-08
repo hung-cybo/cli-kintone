@@ -101,7 +101,7 @@ jobs:
         run: echo "##[set-output name=artifact_content]allure-history"
         id: set-output
       - name: Set GitHub Pages URL
-        run: echo "##[set-output name=pages_url]${{ needs.test-e2e.outputs.pages_url }}"
+        run: echo "##[set-output name=pages_url]${{ needs.test-e2e.outputs.set-pages-url }}"
       - name: Display GitHub Pages URL
-        run: | 
-          echo "GitHub Pages URL: ${{ needs.test-e2e.outputs.pages_url }}"
+        run: |
+          echo "GitHub Pages URL: ${{ needs.test-e2e.outputs.set-pages-url }}"
