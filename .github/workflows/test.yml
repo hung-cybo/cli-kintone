@@ -32,3 +32,33 @@ jobs:
         run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm test:ci
+
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: allure-results
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        with:
+          github_token: $
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Create job summaries
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          pages_url=https://$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $1}').github.io/$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')/${{ github.run_number }}/#behaviors
+          echo "[Allure report 📝](${pages_url})" >> $GITHUB_STEP_SUMMARY  
