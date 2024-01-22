@@ -34,12 +34,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Get platform
+        run: echo "platform=$(echo ${{ matrix.os }} | sed 's/-latest//')" >> $GITHUB_ENV
       - run: pnpm test:ci
       - name: Upload allure results
-        if: always()
+        if: ${{ env.platform == 'ubuntu' }}
         uses: actions/upload-artifact@v4
         with:
-          name: allure_results_unit_${{ matrix.os }}
+          name: allure_results_unit_${{ env.platform }}
           path: allure-results
           if-no-files-found: ignore
 
@@ -82,6 +84,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Get platform
+        run: echo "platform=$(echo ${{ matrix.os }} | sed 's/-latest//')" >> $GITHUB_ENV
       - name: Run e2e tests
         env:
           TEST_KINTONE_BASE_URL: ${{ secrets.TEST_KINTONE_BASE_URL }}
@@ -92,10 +96,10 @@ jobs:
         run: pnpm test:e2e:ci
 
       - name: Upload allure results
-        if: always()
+        if: ${{ env.platform == 'ubuntu' }}
         uses: actions/upload-artifact@v4
         with:
-          name: allure_results_e2e_${{ matrix.os }}
+          name: allure_results_e2e_${{ env.platform }}
           path: allure-results
           if-no-files-found: ignore
 
