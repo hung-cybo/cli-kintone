@@ -110,6 +110,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: allure_results_*
+          merge-multiple: true
           path: allure-results
 
       - name: Load test report history
