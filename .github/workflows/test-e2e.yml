@@ -46,7 +46,7 @@ jobs:
           if-no-files-found: ignore
 
   get-running-os-for-e2e:
-    name: Get running OS
+    name: Get running OS for e2e test
     runs-on: ubuntu-latest
     outputs:
       os: ${{ steps.get-os.outputs.os }}
