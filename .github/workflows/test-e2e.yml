@@ -11,7 +11,39 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  get-running-os:
+  test-unit:
+    name: Node.js ${{ matrix.os }} ${{ matrix.node-version }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test:ci
+      - name: Upload allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure_results_unit_${{ matrix.os }}
+          path: allure-results
+          if-no-files-found: ignore
+
+  get-running-os-for-e2e:
     name: Get running OS
     runs-on: ubuntu-latest
     outputs:
@@ -28,13 +60,13 @@ jobs:
   test-e2e:
     name: Node.js ${{ matrix.os }} ${{ matrix.node-version }}
     runs-on: ${{ matrix.os }}
-    needs: get-running-os
+    needs: get-running-os-for-e2e
 
     strategy:
       max-parallel: 1
       matrix:
         node-version: [18.x]
-        os: ${{ fromJSON(needs.get-running-os.outputs.os) }}
+        os: ${{ fromJSON(needs.get-running-os-for-e2e.outputs.os) }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
@@ -59,32 +91,57 @@ jobs:
           TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN: ${{ secrets.TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN }}
         run: pnpm test:e2e:ci
 
+      - name: Upload allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure_results_e2e_${{ matrix.os }}
+          path: allure-results
+          if-no-files-found: ignore
+
+  report:
+    name: Generate report
+    needs: [test-unit, test-e2e]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download allure results
+        id: download-allure-results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure_results_*
+          path: allure-results
+
       - name: Load test report history
+        id: allure-history
         uses: actions/checkout@v3
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        continue-on-error: true
+        continue-on-error: true # in case run without branch for GitHub page source
         with:
           ref: gh-pages
           path: gh-pages
 
       - name: Build test report
-        uses: simple-elf/allure-report-action@v1.7
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        id: allure-report
+        if: always()
+        uses: simple-elf/allure-report-action@v1.8
         with:
           gh_pages: gh-pages
           allure_history: allure-history
           allure_results: allure-results
+          allure_report: allure-report
+          keep_reports: 10
 
       - name: Publish test report
+        id: deploy-allure-report-page
+        if: steps.allure-report.outcome == 'success'
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         with:
           github_token: $
           publish_branch: gh-pages
           publish_dir: allure-history
 
       - name: Create job summaries
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: steps.deploy-allure-report-page.outcome == 'success'
         run: |
           pages_url=https://$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $1}').github.io/$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')/${{ github.run_number }}/#behaviors
           echo "[Allure report 📝](${pages_url})" >> $GITHUB_STEP_SUMMARY

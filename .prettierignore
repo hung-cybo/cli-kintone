@@ -3,6 +3,8 @@ lib
 dist
 coverage
 .licenses/
+allure-report
+allure-results
 
 # Ignore all HTML files:
 *.html
