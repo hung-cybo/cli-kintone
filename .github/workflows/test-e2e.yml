@@ -105,6 +105,8 @@ jobs:
 
   report:
     name: Generate report
+    permissions:
+      contents: write
     needs: [test-unit, test-e2e]
     runs-on: ubuntu-latest
 
