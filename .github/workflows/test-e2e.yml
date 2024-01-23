@@ -71,11 +71,6 @@ jobs:
         os: ${{ fromJSON(needs.get-running-os-for-e2e.outputs.os) }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: 21
       - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
         with:
@@ -111,6 +106,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 21
       - name: Download allure results
         id: download-allure-results
         uses: actions/download-artifact@v4
