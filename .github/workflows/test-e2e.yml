@@ -91,6 +91,7 @@ jobs:
         if: always()
         run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
+        id: upload-allure-results
         if: ${{ env.platform == 'ubuntu' && always() }}
         uses: actions/upload-artifact@v4
         with:
@@ -108,7 +109,7 @@ jobs:
     steps:
       - name: print test result
         run: |
-          echo "Test result: ${{ needs.test-unit.result }}"
+          echo "Test result: ${{ needs.test-e2e.upload-allure-results.outputs }}"
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
