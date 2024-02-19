@@ -104,11 +104,10 @@ jobs:
       contents: write
     needs: [test-unit, test-e2e]
     if: |
-      !cancelled() &&
+      always() &&
       needs.test-unit.result.ubuntu-latest == 'success' &&
       needs.test-e2e.result.ubuntu-latest == 'success'
     runs-on: ubuntu-latest
-
     steps:
       - name: Set up JDK
         uses: actions/setup-java@v4
