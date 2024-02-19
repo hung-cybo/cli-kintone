@@ -34,9 +34,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: Get platform
-        run: echo "platform=$(echo ${{ matrix.os }} | sed 's/-latest//')" >> $GITHUB_ENV
       - run: pnpm test:ci
+      - name: Extract platform
+        run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
         if: ${{ env.platform == 'ubuntu' }}
         uses: actions/upload-artifact@v4
@@ -79,8 +79,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: Get platform
-        run: echo "platform=$(echo ${{ matrix.os }} | sed 's/-latest//')" >> $GITHUB_ENV
       - name: Run e2e tests
         env:
           TEST_KINTONE_BASE_URL: ${{ secrets.TEST_KINTONE_BASE_URL }}
@@ -89,7 +87,8 @@ jobs:
           TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_APP_ID: ${{ secrets.TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_APP_ID }}
           TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN: ${{ secrets.TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN }}
         run: pnpm test:e2e:ci
-
+      - name: Extract platform
+        run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
         if: ${{ env.platform == 'ubuntu' }}
         uses: actions/upload-artifact@v4
@@ -140,10 +139,10 @@ jobs:
 
       - name: Publish test report
         id: deploy-allure-report-page
-        if: steps.allure-report.outcome == 'success'
+        if: steps.allure-report.outcome == 'success' # make sure the allure report is generated successfully
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: $
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
 
