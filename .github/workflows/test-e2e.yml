@@ -6,10 +6,6 @@ on:
       - main
   pull_request:
 
-concurrency:
-  group: test-e2e-workflow-concurrency-group
-  cancel-in-progress: false
-
 jobs:
   test-unit:
     name: Unit test - Node.js ${{ matrix.os }} ${{ matrix.node-version }}
@@ -62,6 +58,9 @@ jobs:
   test-e2e:
     name: E2e test - Node.js ${{ matrix.os }} ${{ matrix.node-version }}
     runs-on: ${{ matrix.os }}
+    concurrency:
+      group: test-e2e-workflow-concurrency-group
+      cancel-in-progress: false
     needs: get-running-os-for-e2e
 
     strategy:
