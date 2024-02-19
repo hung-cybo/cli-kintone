@@ -98,6 +98,8 @@ jobs:
           name: allure_results_e2e_${{ env.platform }}
           path: allure-results
           if-no-files-found: ignore
+    outputs:
+      artifact-id: ${{ steps.upload-allure-results.outputs.artifact-id }}
 
   report:
     name: Generate report
@@ -109,7 +111,7 @@ jobs:
     steps:
       - name: print test result
         run: |
-          echo "Test result: ${{ needs.test-e2e.upload-allure-results.outputs }}"
+          echo "Test result: ${{ needs.test-e2e.outputs.artifact-id }}"
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
