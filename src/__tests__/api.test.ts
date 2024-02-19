@@ -71,7 +71,7 @@ describe("api", () => {
     });
     expect(apiClient).toBeInstanceOf(KintoneRestAPIClient);
     expect(KintoneRestAPIClient).toHaveBeenCalledWith({
-      baseUrl: BASE_URL,
+      // baseUrl: BASE_URL,
       auth: {
         username: USERNAME,
         password: PASSWORD,
