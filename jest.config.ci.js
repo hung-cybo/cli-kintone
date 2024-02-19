@@ -1,4 +1,4 @@
-const { defaultConfig } = require("./jest.config");
+const defaultConfig = require("./jest.config");
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = Object.assign(defaultConfig, {
