@@ -32,9 +32,10 @@ jobs:
       - run: pnpm build
       - run: pnpm test:ci
       - name: Extract platform
+        if: always()
         run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
-        if: ${{ env.platform == 'ubuntu' }}
+        if: ${{ env.platform == 'ubuntu' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: allure_results_unit_${{ env.platform }}
@@ -87,9 +88,10 @@ jobs:
           TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN: ${{ secrets.TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN }}
         run: pnpm test:e2e:ci
       - name: Extract platform
+        if: always()
         run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
-        if: ${{ env.platform == 'ubuntu' }}
+        if: ${{ env.platform == 'ubuntu' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: allure_results_e2e_${{ env.platform }}
