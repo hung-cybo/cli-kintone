@@ -35,12 +35,15 @@ jobs:
         if: always()
         run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
+        id: upload-allure-results
         if: ${{ env.platform == 'ubuntu' && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: allure_results_unit_${{ env.platform }}
           path: allure-results
           if-no-files-found: ignore
+    outputs:
+      artifact-id: ${{ steps.upload-allure-results.outputs.artifact-id || '' }}
 
   get-running-os-for-e2e:
     name: Get running OS for e2e test
@@ -99,7 +102,7 @@ jobs:
           path: allure-results
           if-no-files-found: ignore
     outputs:
-      artifact-id: ${{ steps.upload-allure-results.outputs.artifact-id }}
+      artifact-id: ${{ steps.upload-allure-results.outputs.artifact-id || '' }}
 
   report:
     name: Generate report
@@ -111,7 +114,8 @@ jobs:
     steps:
       - name: print test result
         run: |
-          echo "Test result: ${{ needs.test-e2e.outputs.artifact-id }}"
+          echo "Test result 1: ${{ needs.test-e2e.outputs.artifact-id }}"
+          echo "Test result 2: ${{ needs.test-unit.outputs.artifact-id }}"
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
