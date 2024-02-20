@@ -191,10 +191,7 @@ const loadFromKintone: () => Promise<Credentials> = async () => {
   const kintoneUserCMAApiToken = getEnvVar(
     "TEST_KINTONE_USER_CREDENTIAL_MANAGEMENT_API_TOKEN",
   );
-  const kintoneAppApiToken = getEnvVar(
-      "TEST_KINTONE_SECRETS_APP_API_TOKEN",
-  );
-  console.log("kintoneAppApiToken", kintoneAppApiToken);
+  console.log("kintoneAppApiToken", "this is app api token");
 
   const client = new KintoneRestAPIClient({
     baseUrl: kintoneBaseUrl,
