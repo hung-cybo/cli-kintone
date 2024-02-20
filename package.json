@@ -26,7 +26,7 @@
     "test": "jest",
     "test:ci": "jest --runInBand -c jest.config.ci.js",
     "test:e2e": "cucumber-js features/common.feature",
-    "test:e2e:ci": "cucumber-js --format ./cucumber-reporter.js:./allure-results/dummy.txt features/common.feature",
+    "test:e2e:ci": "rimraf allure-results && cucumber-js --format ./cucumber-reporter.js:./allure-results/dummy.txt features/common.feature",
     "lint": "run-p -l lint:*",
     "lint:eslint": "eslint --ext .js,.mjs,.cjs,.ts,.mts,.cts ./ --max-warnings 0",
     "lint:prettier": "prettier --check '**/*.{json,md,yml,yaml}'",
