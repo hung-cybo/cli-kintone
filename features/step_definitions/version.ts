@@ -1,9 +1,12 @@
 import * as assert from "assert";
 import { Then } from "../utils/world";
 
-Then("I should get the version formatted in {string}", function () {
-  // function (versionFormat: string) {
-  // const reg = new RegExp(versionFormat);
-  // assert.match(this.response.stdout.toString(), reg);
-  assert.fail("this is app api token");
-});
+Then(
+  "I should get the version formatted in {string}",
+  function (versionFormat: string) {
+    // const reg = new RegExp(versionFormat);
+    // assert.match(this.response.stdout.toString(), reg);
+    console.log(versionFormat);
+    assert.fail("this is app api token");
+  },
+);
