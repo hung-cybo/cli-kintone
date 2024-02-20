@@ -108,7 +108,7 @@ jobs:
     name: Generate report
     permissions:
       contents: write
-    if: always()
+    if: ${{ always() && (needs.test-e2e.outputs.artifact-id != '' || needs.test-unit.outputs.artifact-id != '') }}
     needs: [test-unit, test-e2e]
     runs-on: ubuntu-latest
     steps:
