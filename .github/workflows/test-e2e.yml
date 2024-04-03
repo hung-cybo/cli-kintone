@@ -36,7 +36,8 @@ jobs:
         run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
         id: upload-allure-results
-        if: ${{ env.platform == 'ubuntu' && always() }}
+        #if: ${{ env.platform == 'ubuntu' && always() }}
+        if: ${{ env.platform == 'ubuntu' }}
         uses: actions/upload-artifact@v4
         with:
           name: allure_results_unit_${{ env.platform }}
