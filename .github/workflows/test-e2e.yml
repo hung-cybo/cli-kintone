@@ -36,7 +36,7 @@ jobs:
         run: echo "platform=$(echo ${{ matrix.os }} | cut -d '-' -f 1)" >> $GITHUB_ENV
       - name: Upload allure results
         id: upload-allure-results
-        if: ${{ env.platform == 'ubuntu' && always() }}
+        if: ${{ env.platform == 'ubuntu' && !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: allure_results_unit_${{ env.platform }}
@@ -161,5 +161,5 @@ jobs:
       - name: Create job summaries
         if: steps.deploy-allure-report-page.outcome == 'success'
         run: |
-          pages_url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/${{ github.run_attempt }}/#behaviors
+          pages_url=https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/${{ github.run_number }}/#behaviors
           echo "[Allure report 📝](${pages_url})" >> $GITHUB_STEP_SUMMARY
